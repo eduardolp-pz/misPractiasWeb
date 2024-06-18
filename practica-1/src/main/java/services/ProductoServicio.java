@@ -83,7 +83,7 @@ public class ProductoServicio {
     Map<Producto, AbstractMap.SimpleEntry<Integer, BigDecimal>> resumen = new HashMap<>();
     for (Producto producto : productos) {
       if (resumen.containsKey(producto)) {
-        AbstractMap.SimpleEntry<Integer, BigDecimal> entry = resumen.get(producto.getPrecio());
+        AbstractMap.SimpleEntry<Integer, BigDecimal> entry = resumen.get(producto);
         Integer newQuantity = entry.getKey() + 1;
         BigDecimal newTotal = entry.getValue().add(producto.getPrecio());
         // Update the map with a new entry
