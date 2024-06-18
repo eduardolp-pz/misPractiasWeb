@@ -8,10 +8,7 @@ import services.CarroCompraServicio;
 import services.ProductoServicio;
 
 import java.math.BigDecimal;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CarroCompraControlador {
   private final static  CarroCompraServicio carroCompraServicio = CarroCompraServicio.getInstance();
@@ -58,10 +55,21 @@ public class CarroCompraControlador {
 
   public static void eliminarProductoDelCarro(@NotNull Context context) {
     String nombreProducto = (context.pathParam("name"));
-    Producto producto = productoServicio.getByName(nombreProducto);
     CarroCompra carroCompra = context.sessionAttribute("carroCompra");
     assert carroCompra != null;
-    carroCompra.getListaProductos().remove(producto);
+
+    List<Producto> listaProductos = carroCompra.getListaProductos();
+
+    for (int i = 0; i < listaProductos.size(); i++) {
+      Producto producto = listaProductos.get(i);
+      if (producto.getNombre().equals(nombreProducto)) {
+        listaProductos.remove(i);
+        context.sessionAttribute("carroCompra", carroCompra);
+        context.sessionAttribute("totalCarroCompra", carroCompra.getCount());
+        break;
+      }
+    }
+
     context.sessionAttribute("carroCompra", carroCompra);
     context.sessionAttribute("totalCarroCompra", carroCompra.getCount());
     context.redirect("/carrito");
