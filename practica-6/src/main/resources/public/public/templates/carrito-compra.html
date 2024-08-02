@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>QuickStart Shopping Cart  </title>
+  <meta content="Ten un control de tus productos, carrito de compras y ventas de manera eficiente." name="description">
+  <meta content="Compras, Ventas, Carrito de Compra." name="keywords">
+
+  <!-- Favicons -->
+  <link href="/img/favicon.png" rel="icon">
+  <link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="/css/main.css" rel="stylesheet">
+</head>
+
+<body class="index-page">
+
+<header th:replace="~{/public/templates/fragments/header.html :: header}"></header>
+
+  <main class="main">
+    <section id="hero" class="hero section">
+      <div class="hero-bg">
+        <img src="/img/hero-bg-light.webp" alt="">
+      </div>
+      <div class="container text-center border-1">
+        <div class="row justify-content-center">
+          <div class="col-md-6 text-center mb-4">
+            <h2 class="heading-section">Datos del Cliente</h2>
+          </div>
+          <div class="d-flex gap-3 w-100">
+            <p class="h4">Nombre del Cliente:</p>
+            <label>
+              <input th:if="${session.usuario}" id="visibleInput" th:value="${session.usuario.name}" type="text" class="form-control input-text" style="width: 500px"/>
+            </label>
+            <label>
+              <input th:unless="${session.usuario}" id="visibleInput" type="text" class="form-control input-text" style="width: 500px"/>
+            </label>
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-md-6 text-center mb-4">
+            <h2 class="heading-section">Carrito De Compra</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-wrap">
+              <table class="table">
+                <thead class="thead-primary">
+                <tr class="text-black">
+                  <th class="p-2"><p class="text-black font-weight-bold mb-0 h3">Producto</p></th>
+                  <th class="p-2"><p class="text-black font-weight-bold mb-0 h3">Precio</p></th>
+                  <th class="p-2"><p class="text-black font-weight-bold mb-0 h3">Cantidad</p></th>
+                  <th class="p-2"><p class="text-black font-weight-bold mb-0 h3">Precio Total</p></th>
+                  <th class="p-2"><p class="text-black font-weight-bold mb-0 h3">Acción</p></th>
+                </tr>
+                </thead><tbody>
+              <tr class="alert" role="alert" th:each="entry : ${resumenProductos}">
+                <td>
+                  <div class="email">
+                    <span class="h6" th:text="${entry.key.nombre}"> </span>
+                    <span> </span>
+                  </div>
+                </td>
+                <td><span class="h6" th:text="'RD$' + (${entry.value.value}/${entry.value.key})"></span></td>
+                <td class="quantity">
+                  <div class="input-group">
+                    <input disabled type="text" th:value="${entry.value.key}" name="cantidad" class="quantity form-control input-number w-25" min="1" max="100">
+                  </div>
+                </td>
+                <td><span class="h6" th:text="'RD$' + ${entry.value.value}"></span></td>
+                <td>
+                  <form method="POST" th:action="'carrito/eliminar-unidad/' + ${entry.key.nombre}">
+                    <input class="w-25" type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="btn-gets-started rounded-5 bg-danger border-0 p-2 text-white">
+                      Quitar Unidad
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              </tbody>
+              </table>
+              <div class="d-flex justify-content-end gap-3 w-100">
+                <p class="h5">Total:</p>
+                <p class="h5" th:text="'RD$' + ${precioTotal}"></p>
+              </div>
+              <div class="d-flex gap-3 justify-content-center align-items-center">
+                <form method="POST" action="/carrito/eliminar-todo">
+                  <button type="submit" class="btn-gets-started rounded-5 bg-danger border-0 p-2 text-white">
+                    Vaciar Carrito
+                  </button>
+                </form>
+
+                <form method="POST" action="/comprar">
+                  <label>
+                    <input required type="hidden" id="hiddenInput" name="cliente">
+                  </label>
+                  <button type="submit" id="comprar" class="btn-gets-started rounded-5 bg-info border-0 p-2 text-white">
+                    Comprar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- /Hero Section -->
+  </main>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const visibleInput = document.getElementById('visibleInput');
+    const hiddenInput = document.getElementById('hiddenInput');
+    hiddenInput.value = visibleInput.value;
+  });
+  document.getElementById('visibleInput').addEventListener('input', function() { document.getElementById('hiddenInput').value = this.value; })
+</script>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.querySelector('form[action="/comprar"]').addEventListener('submit', function(e) {
+      const input = document.getElementById('hiddenInput');
+      if (!input.value) {
+        e.preventDefault();
+        alert('Ingrese su nombre.');
+      }
+    });
+    /*]]>*/
+  </script>
+  <th:block th:if="${#maps.isEmpty(resumenProductos)}">
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      document.querySelector('#comprar').disabled = true;
+      /*]]>*/
+    </script>
+  </th:block>
+
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/php-email-form/validate.js"></script>
+  <script src="/vendor/aos/aos.js"></script>
+  <script src="/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="/js/main.js"></script>
+
+</body>
+
+</html>

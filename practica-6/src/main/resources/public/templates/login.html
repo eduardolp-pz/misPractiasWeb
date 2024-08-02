@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>QuickStart Shopping Cart  </title>
+  <meta content="Ten un control de tus productos, carrito de compras y ventas de manera eficiente." name="description">
+  <meta content="Compras, Ventas, Carrito de Compra." name="keywords">
+
+  <!-- Favicons -->
+  <link href="/img/favicon.png" rel="icon">
+  <link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="/css/main.css" rel="stylesheet">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/websocket_users.js"></script>
+</head>
+
+<body class="index-page vh-100">
+
+<header th:replace="~{/public/templates/fragments/header.html :: header}"></header>
+
+  <main class="main h-100">
+    <section id="hero" class="hero section h-100 pt-0">
+      <div class="hero-bg">
+        <img src="/img/hero-bg-light.webp" alt="">
+      </div>
+      <div class="container text-center p-4">
+        <h2 class="heading-section">Iniciar Sesión</h2>
+        <form method="POST" action="/login" class="d-flex flex-column gap-4">
+          <div class="form-floating">
+            <input name="usuario" type="text" class="form-control" id="floatingInput" placeholder="Username" required>
+            <label for="floatingInput">Usuario</label>
+          </div>
+          <div class="form-floating">
+            <input name="contrasena" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+            <label for="floatingPassword">Contraseña</label>
+          </div>
+          <div class="form-check">
+            <input name="remember"  type="checkbox" value="" id="remember">
+            <label for="remember">Recuerdame</label>
+          </div>
+          <button class="btn btn-info w-100 py-2" type="submit">Iniciar Sesión</button>
+        </form>
+      </div>
+    </section><!-- /Hero Section -->
+  </main>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/php-email-form/validate.js"></script>
+  <script src="/vendor/aos/aos.js"></script>
+  <script src="/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="/js/main.js"></script>
+
+</body>
+
+</html>
