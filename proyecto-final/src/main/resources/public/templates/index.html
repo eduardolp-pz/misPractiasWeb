@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Proyecto Final</title>
+
+    <link href="../css/styles.css" rel="stylesheet"/>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="../js/scripts.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="../js/offline.js"></script>
+    <script src="../js/offlineText.js"></script>
+    <link rel="stylesheet" href="../css/offline.js.css">
+</head>
+
+<body class="sb-nav-fixed">
+    <nav th:replace="~{/public/templates/fragments/navbar.html :: navbarFragment}"></nav>
+    <div id="layoutSidenav">
+        <div th:replace="~{/public/templates/fragments/aside.html :: asideFragment}"></div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Panel</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">Encuestas</li>
+                    </ol>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            Encuestas entradas
+                        </div>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Entrada #</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Reparto</th>
+                                    <th scope="col">Nivel Eduacativo</th>
+                                    <th scope="col">Encuestador</th>
+                                    <th scope="col" class="d-none d-md-table-cell">Latitud</th>
+                                    <th scope="col" class="d-none d-md-table-cell">Longitud</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${entries}">
+                                    <th scope="row" th:text="${e.id}" class="text-overflow"></th>
+                                    <td th:text="${e.name}" class="text-overflow"></td>
+                                    <td th:text="${e.sector}" class="text-overflow"></td>
+                                    <td th:text="${e.educationLevel}" class="text-overflow"></td>
+                                    <td th:text="${e.user.username}" class="text-overflow"></td>
+                                    <td th:text="${e.coordinates.latitude}" class="d-none d-md-table-cell text-overflow"></td>
+                                    <td th:text="${e.coordinates.longitude}" class="d-none d-md-table-cell text-overflow"></td>
+                                    <td><a class="btn btn-secondary" th:href="'form/' + ${e.id}">Ir</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id = "mapid" style="height: 600px;"></div>
+                <script th:inline="javascript">
+                    let entries = [[${entries}]];
+
+                    let map = L.map('mapid').setView([entries[0].coordinates.latitude, entries[0].coordinates.longitude], 8);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    entries.forEach((entry) =>{
+                        let latitude = entry.coordinates.latitude;
+                        let longitude = entry.coordinates.longitude;
+                        let name = entry.name;
+                        let sector = entry.sector;
+
+                        L.marker([latitude, longitude]).addTo(map)
+                          .bindPopup('Name: ' + name + '<br>' + 'Sector: ' + sector).openPopup();
+                    });
+                </script>
+            </main>
+            <div th:replace="~{/public/templates/fragments/footer.html :: footerFragment}"></div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>

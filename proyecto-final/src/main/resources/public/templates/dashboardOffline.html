@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Proyecto final</title>
+
+  <link href="../css/styles.css" rel="stylesheet"/>
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="../js/scripts.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="../js/offline.js"></script>
+  <script src="../js/offlineText.js"></script>
+  <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+  <link rel="stylesheet" href="../css/offline.js.css">
+  <script src="../js/dexie.js"></script>
+  <script src="../js/jquery-3.2.1.min.js"></script>
+  <script src="../js/SyncDB.js"></script>
+  <script src="../js/saveDataForm.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(() =>{
+      const db = new Dexie("myDb");
+      db.version(1).stores({
+        form: '++id,name,sector,educationLevel,userId,latitude,longitude'
+      });
+      db.open().catch((error) =>{
+        console.error("Open failed: " + error);
+      });
+
+      let map = L.map('mapid').setView([19.4612,-70.6766], 8);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      db.form.each((entry) => {
+        let row = "<tr><th scope='row'>" + entry.id + "</th>" +
+              "<td>" + entry.name + "</td>" +
+              "<td>" + entry.sector + "</td>" +
+              "<td>" + entry.educationLevel + "</td>" +
+              "<td>" + localStorage.getItem('username') + "</td>" +
+              "<td class='d-none d-md-table-cell'>" + entry.latitude + "</td>" +
+              "<td class='d-none d-md-table-cell'>" + entry.longitude + "</td>" +
+              "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' id='openModal' data-bs-target='#form'>Edit</button></td></tr>";
+            $("#table tbody").append(row);
+
+
+
+        let latitude = entry.latitude;
+        let longitude = entry.longitude;
+        let name = entry.name;
+        let sector = entry.sector;
+
+        L.marker([latitude, longitude]).addTo(map)
+          .bindPopup('Name: ' + name + '<br>' + 'Sector: ' + sector).openPopup();
+      });
+
+      $('#table tbody').on('click', '#openModal', function() {
+        let row = $(this).closest('tr');
+        let name = row.find('td:eq(0)').text();
+        let sector = row.find('td:eq(1)').text();
+        let education = row.find('td:eq(2)').text();
+        $('#name').val(name);
+        $('#sector').val(sector);
+        $('#miComboBox').val(education);
+        $('#username').val(localStorage.getItem('username'));
+        $('#idHidden').val(row.find('th:eq(0)').text());
+      });
+
+    });
+  </script>
+</head>
+
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand">
+  <a class="navbar-brand ps-3" href="/">Proyecto Final</a>
+  <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+</nav>
+<div id="layoutSidenav">
+  <div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion " id="sidenavAccordion">
+      <div class="sb-sidenav-menu">
+        <div class="nav">
+          <div class="sb-sidenav-menu-heading">Secciones</div>
+          <a class="nav-link" href="/dashboard">
+            <div class="sb-nav-link-icon"><i class="fas fa-square-poll-horizontal"></i></div>
+            Panel Principal
+          </a>
+          <a class="nav-link" href="/tempaltes/dashboardOffline.html">
+            <div class="sb-nav-link-icon"><i class="fas fa-square-poll-horizontal"></i></div>
+            Panel Sin linea
+          </a>
+          <a class="nav-link" href="/form">
+            <div class="sb-nav-link-icon"><i class="fas fa-tablet-button"></i></div>
+            Formulario
+          </a>
+          <a class="nav-link" href="/templates/formOffline.html">
+            <div class="sb-nav-link-icon"><i class="fas fa-tablet-button"></i></div>
+            Formulario Sin Liena
+          </a>
+          <a class="nav-link" href="/users">
+            <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+            Usuarios
+          </a>
+          <a class="nav-link" href="/auth/login">
+            <div class="sb-nav-link-icon"><i class="fas fa-right-to-bracket"></i></div>
+            Iniciar Sesión
+          </a>
+          <a class="nav-link" href="/auth/logout">
+            <div class="sb-nav-link-icon"><i class="fas fa-right-from-bracket"></i></div>
+            Cerrar Sesión
+          </a>
+        </div>
+      </div>
+      <div class="sb-sidenav-footer">
+        <div class="small">Usuario:</div>
+        <p>Administrador</p>
+      </div>
+    </nav>
+  </div>
+
+  <div class="modal fade" id="form" tabindex="-1" aria-labelledby="formModal" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Formulario Sin Conexión</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nombre</label>
+              <input name="name" type="text" class="form-control w-25" id="name" aria-describedby="nameHelp" required>
+              <div id="nameHelp" class="form-text">Nombre del Usuario</div>
+            </div>
+            <div class="mb-3">
+              <label for="sector" class="form-label">Reparto</label>
+              <input name="sector" type="text" class="form-control w-25" id="sector" aria-describedby="sectorHelp" required>
+              <div id="sectorHelp" class="form-text">Reparto del Usuario</div>
+            </div>
+            <div class="mb-3">
+              <label for="miComboBox">Nivel de Eduacación</label>
+              <select name ="education" class="form-select" id="miComboBox" required>
+                <option value="Basico">Basico</option>
+                <option value="Medio">Medio</option>
+                <option value="Grado Universitario">Grado Universitario</option>
+                <option value="Postgrado">Postgrado</option>
+                <option value="Doctorado">Doctorado</option>
+              </select>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="username">Enucuestador</label>
+                <input name="username" class="form-control" id="username" type="text" readonly required />
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="idHidden">Identificador</label>
+                <input name="idHidden" class="form-control" id="idHidden" type="text" readonly />
+              </div>
+            </div>
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary">Entregar Formulario</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Panel Inicial</h1>
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Entradas
+          </div>
+          <table id="table" class="table">
+            <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Reparto</th>
+              <th scope="col">Nivel Educativo</th>
+              <th scope="col">Encuestador</th>
+              <th scope="col" class="d-none d-md-table-cell">Latitud</th>
+              <th scope="col" class="d-none d-md-table-cell">Longitud</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary" id="sync">Sincronizar Datos</button>
+        </div>
+      </div>
+      <div id = "mapid" style="height: 600px;"></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
